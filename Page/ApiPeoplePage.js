@@ -1,14 +1,15 @@
 class ApiPeoplePage{
-    visitApiPeople(){
-      cy.visit('https://swapi.co/api/people/1/')
+  apiPeopleStatus
+
+    validateApiPeopleUrl(){
+      this.apiPeopleStatus = cy.request('https://swapi.co/api/people/1/')
     }
     validateApiPeopleStatus(){
-      const apiPeopleStatus = cy.request('GET', 'https://swapi.co/api/people/1/')
-      apiPeopleStatus.its('status').should('be.eql', 200)
+      this.apiPeopleStatus.its('status').should('be.eql', 200)
     }  
   
     validateApiPeopleFields(){
-        cy.request('GET', 'https://swapi.co/api/people/1/')
+        cy.request('https://swapi.co/api/people/1/')
         .then((response) => {
         expect(response.body).to.have.property('name', 'Luke Skywalker')
         expect(response.body).to.have.property('height', '172')
