@@ -1,0 +1,131 @@
+String cpf = gerarCPF(false)
+log.info(cpf)
+
+context.testCase.setPropertyValue("cpfCliente", cpf)
+
+int randomiza(n) {
+ranNum = Math.round(Math.random()*n);
+return ranNum;
+}
+
+int mod(dividendo,divisor) {
+return Math.round(dividendo - (Math.floor(dividendo/divisor)*divisor));
+}
+
+String gerarCPF(boolean comPontos) {
+
+n = 9;
+n1 = randomiza(n);
+n2 = randomiza(n);
+n3 = randomiza(n);
+n4 = randomiza(n);
+n5 = randomiza(n);
+n6 = randomiza(n);
+n7 = randomiza(n);
+n8 = randomiza(n);
+n9 = randomiza(n);
+d1 = n9*2+n8*3+n7*4+n6*5+n5*6+n4*7+n3*8+n2*9+n1*10;
+d1 = 11 - ( mod(d1,11) );
+if (d1>=10) d1 = 0;
+d2 = d1*2+n9*3+n8*4+n7*5+n6*6+n5*7+n4*8+n3*9+n2*10+n1*11;
+d2 = 11 - ( mod(d2,11) );
+if (d2>=10) d2 = 0;
+retorno = '';
+if (comPontos) cpf = ''+n1+n2+n3+'.'+n4+n5+n6+'.'+n7+n8+n9+'-'+d1+d2;
+else cpf = ''+n1+n2+n3+n4+n5+n6+n7+n8+n9+d1+d2;
+
+return cpf;
+}
+
+
+============================================================================
+
+def gerador = { String alphabet, int n ->
+
+  new Random().with {
+    (1..n).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()
+  }
+}
+
+context.testCase.setPropertyValue("codProcesso", gerador( (('0'..'9')).join(), 9 ))
+context.testCase.setPropertyValue("nome", gerador( (('A'..'Z')).join(), 9 )+ " " + gerador( (('A'..'Z')).join(), 9 ))
+
+
+============================================================================
+
+import groovy.json.JsonSlurper
+
+def ResponseMessage = messageExchange.response.responseContent
+
+def jsonSlurper = new JsonSlurper().parseText(ResponseMessage)
+	context.testCase.setPropertyValue("codProcesso",jsonSlurper.codProcesso)
+=============================================================================
+
+import groovy.json.JsonSlurper
+
+//def runner = context.testRunner;
+
+def ResponseMessage = messageExchange.response.responseContent
+
+def jsonSlurper = new JsonSlurper().parseText(ResponseMessage)
+
+assert jsonSlurper.imagem != null
+assert jsonSlurper.melhor != null
+================================================================================
+
+<settings>
+  <activeProfiles>
+    <!--make the profile active all the time -->
+    <activeProfile>securecentral</activeProfile>
+  </activeProfiles>
+  <profiles>
+    <profile>
+      <id>securecentral</id>
+      <!--Override the repository (and pluginRepository) "central" from the
+         Maven Super POM -->
+      <repositories>
+        <repository>
+          <id>central</id>
+          <url>http://repo1.maven.org/maven2</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+        </repository>
+      </repositories>
+ <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <name>Maven Plugin Repository</name>
+      <url>http://repo1.maven.org/maven2</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+    </profile>
+  </profiles>
+</settings>
+
+==============================================================================
+
+${#Project#codProduto}
+
+  "codProcesso": "${#TestCase#codProcesso}",
+    "nome": "${#TestCase#nome}",
+    "cpf": "${#TestCase#cpfCliente}",
+	
+==============================================================================
+	
+import groovy.json.JsonSlurper
+
+def ResponseMessage = messageExchange.response.responseContent
+
+def jsonSlurper = new JsonSlurper().parseText(ResponseMessage)
+
+context.testCase.setPropertyValue("codIdProposta",Integer.toString(jsonSlurper.propostas[0]))
+
+
